@@ -1,198 +1,197 @@
-namespace Ssstudio.Calculator.Vectors
+namespace Ssstudio.Calculator.Vectors;
+
+using Ssstudio.Calculator.Models;
+using Ssstudio.Calculator;
+
+/// <summary>
+/// Represents a 2D vector with common vector operations.
+/// Reuses Calculator class for arithmetic operations.
+/// Implements IVector2 interface following LSP (Liskov Substitution Principle).
+/// </summary>
+public class Vector2D : IVector2
 {
-    using Ssstudio.Calculator.Models;
-    using Ssstudio.Calculator;
+    private static readonly ICalculator<double> _calculator = new Calculator<double>();
+
+    public double X { get; }
+    public double Y { get; }
 
     /// <summary>
-    /// Represents a 2D vector with common vector operations.
-    /// Reuses Calculator class for arithmetic operations.
-    /// Implements IVector2 interface following LSP (Liskov Substitution Principle).
+    /// Initializes a new instance of Vector2D.
     /// </summary>
-    public class Vector2D : IVector2
+    /// <param name="x">X component</param>
+    /// <param name="y">Y component</param>
+    public Vector2D(double x, double y)
     {
-        private static readonly ICalculator<double> _calculator = new Calculator<double>();
+        X = x;
+        Y = y;
+    }
 
-        public double X { get; }
-        public double Y { get; }
+    /// <summary>
+    /// Calculates the magnitude (length) of the vector.
+    /// </summary>
+    /// <returns>The magnitude value</returns>
+    public double Magnitude()
+    {
+        return Math.Sqrt((X * X) + (Y * Y));
+    }
 
-        /// <summary>
-        /// Initializes a new instance of Vector2D.
-        /// </summary>
-        /// <param name="x">X component</param>
-        /// <param name="y">Y component</param>
-        public Vector2D(double x, double y)
-        {
-            X = x;
-            Y = y;
-        }
+    /// <summary>
+    /// Calculates the Euclidean distance between two vectors.
+    /// </summary>
+    /// <param name="other">The other vector</param>
+    /// <returns>The distance value</returns>
+    public double Distance(IVector other)
+    {
+        if (other is not IVector2 vector2D)
+            throw new ArgumentException("Can only calculate distance to another 2D vector", nameof(other));
 
-        /// <summary>
-        /// Calculates the magnitude (length) of the vector.
-        /// </summary>
-        /// <returns>The magnitude value</returns>
-        public double Magnitude()
-        {
-            return Math.Sqrt((X * X) + (Y * Y));
-        }
+        double dx = X - vector2D.X;
+        double dy = Y - vector2D.Y;
+        return Math.Sqrt((dx * dx) + (dy * dy));
+    }
 
-        /// <summary>
-        /// Calculates the Euclidean distance between two vectors.
-        /// </summary>
-        /// <param name="other">The other vector</param>
-        /// <returns>The distance value</returns>
-        public double Distance(IVector other)
-        {
-            if (other is not IVector2 vector2D)
-                throw new ArgumentException("Can only calculate distance to another 2D vector", nameof(other));
+    /// <summary>
+    /// Returns a normalized vector (unit length) in the same direction.
+    /// </summary>
+    /// <returns>A unit vector in the same direction</returns>
+    public IVector Normalize()
+    {
+        double magnitude = this.Magnitude();
+        if (magnitude == 0)
+            throw new InvalidOperationException("Cannot normalize a zero vector");
 
-            double dx = X - vector2D.X;
-            double dy = Y - vector2D.Y;
-            return Math.Sqrt((dx * dx) + (dy * dy));
-        }
+        return new Vector2D(X / magnitude, Y / magnitude);
+    }
 
-        /// <summary>
-        /// Returns a normalized vector (unit length) in the same direction.
-        /// </summary>
-        /// <returns>A unit vector in the same direction</returns>
-        public IVector Normalize()
-        {
-            double magnitude = this.Magnitude();
-            if (magnitude == 0)
-                throw new InvalidOperationException("Cannot normalize a zero vector");
+    /// <summary>
+    /// Calculates the dot product with another 2D vector.
+    /// </summary>
+    /// <param name="other">The other vector</param>
+    /// <returns>The dot product value</returns>
+    public double Dot(IVector2 other)
+    {
+        if (other == null)
+            throw new ArgumentNullException(nameof(other));
 
-            return new Vector2D(X / magnitude, Y / magnitude);
-        }
+        return (X * other.X) + (Y * other.Y);
+    }
 
-        /// <summary>
-        /// Calculates the dot product with another 2D vector.
-        /// </summary>
-        /// <param name="other">The other vector</param>
-        /// <returns>The dot product value</returns>
-        public double Dot(IVector2 other)
-        {
-            if (other == null)
-                throw new ArgumentNullException(nameof(other));
+    /// <summary>
+    /// Vector addition using Calculator class.
+    /// </summary>
+    /// <param name="a">First vector</param>
+    /// <param name="b">Second vector</param>
+    /// <returns>Sum of vectors</returns>
+    public static Vector2D operator +(Vector2D a, Vector2D b)
+    {
+        if (a == null || b == null)
+            throw new ArgumentNullException(a == null ? nameof(a) : nameof(b));
 
-            return (X * other.X) + (Y * other.Y);
-        }
+        OperationParameters<double> parametersX = new OperationParameters<double>(a.X, b.X);
+        IOperationResult<double> resultX = _calculator.Add(parametersX);
+        
+        OperationParameters<double> parametersY = new OperationParameters<double>(a.Y, b.Y);
+        IOperationResult<double> resultY = _calculator.Add(parametersY);
 
-        /// <summary>
-        /// Vector addition using Calculator class.
-        /// </summary>
-        /// <param name="a">First vector</param>
-        /// <param name="b">Second vector</param>
-        /// <returns>Sum of vectors</returns>
-        public static Vector2D operator +(Vector2D a, Vector2D b)
-        {
-            if (a == null || b == null)
-                throw new ArgumentNullException(a == null ? nameof(a) : nameof(b));
+        if (!resultX.IsSuccess || !resultY.IsSuccess)
+            throw new InvalidOperationException("Addition operation failed");
 
-            OperationParameters<double> parametersX = new OperationParameters<double>(a.X, b.X);
-            IOperationResult<double> resultX = _calculator.Add(parametersX);
-            
-            OperationParameters<double> parametersY = new OperationParameters<double>(a.Y, b.Y);
-            IOperationResult<double> resultY = _calculator.Add(parametersY);
+        double newX = resultX.Value ?? 0;
+        double newY = resultY.Value ?? 0;
+        
+        return new Vector2D(newX, newY);
+    }
 
-            if (!resultX.IsSuccess || !resultY.IsSuccess)
-                throw new InvalidOperationException("Addition operation failed");
+    /// <summary>
+    /// Vector subtraction using Calculator class.
+    /// </summary>
+    /// <param name="a">First vector</param>
+    /// <param name="b">Second vector</param>
+    /// <returns>Difference of vectors</returns>
+    public static Vector2D operator -(Vector2D a, Vector2D b)
+    {
+        if (a == null || b == null)
+            throw new ArgumentNullException(a == null ? nameof(a) : nameof(b));
 
-            double newX = resultX.Value ?? 0;
-            double newY = resultY.Value ?? 0;
-            
-            return new Vector2D(newX, newY);
-        }
+        OperationParameters<double> parametersX = new OperationParameters<double>(a.X, b.X);
+        IOperationResult<double> resultX = _calculator.Subtract(parametersX);
+        
+        OperationParameters<double> parametersY = new OperationParameters<double>(a.Y, b.Y);
+        IOperationResult<double> resultY = _calculator.Subtract(parametersY);
 
-        /// <summary>
-        /// Vector subtraction using Calculator class.
-        /// </summary>
-        /// <param name="a">First vector</param>
-        /// <param name="b">Second vector</param>
-        /// <returns>Difference of vectors</returns>
-        public static Vector2D operator -(Vector2D a, Vector2D b)
-        {
-            if (a == null || b == null)
-                throw new ArgumentNullException(a == null ? nameof(a) : nameof(b));
+        if (!resultX.IsSuccess || !resultY.IsSuccess)
+            throw new InvalidOperationException("Subtraction operation failed");
 
-            OperationParameters<double> parametersX = new OperationParameters<double>(a.X, b.X);
-            IOperationResult<double> resultX = _calculator.Subtract(parametersX);
-            
-            OperationParameters<double> parametersY = new OperationParameters<double>(a.Y, b.Y);
-            IOperationResult<double> resultY = _calculator.Subtract(parametersY);
+        double newX = resultX.Value ?? 0;
+        double newY = resultY.Value ?? 0;
 
-            if (!resultX.IsSuccess || !resultY.IsSuccess)
-                throw new InvalidOperationException("Subtraction operation failed");
+        return new Vector2D(newX, newY);
+    }
 
-            double newX = resultX.Value ?? 0;
-            double newY = resultY.Value ?? 0;
+    /// <summary>
+    /// Scalar multiplication using Calculator class.
+    /// </summary>
+    /// <param name="v">Vector to multiply</param>
+    /// <param name="scalar">Scalar value</param>
+    /// <returns>Scaled vector</returns>
+    public static Vector2D operator *(Vector2D v, double scalar)
+    {
+        if (v == null)
+            throw new ArgumentNullException(nameof(v));
 
-            return new Vector2D(newX, newY);
-        }
+        OperationParameters<double> parametersX = new OperationParameters<double>(v.X, scalar);
+        IOperationResult<double> resultX = _calculator.Multiply(parametersX);
+        
+        OperationParameters<double> parametersY = new OperationParameters<double>(v.Y, scalar);
+        IOperationResult<double> resultY = _calculator.Multiply(parametersY);
 
-        /// <summary>
-        /// Scalar multiplication using Calculator class.
-        /// </summary>
-        /// <param name="v">Vector to multiply</param>
-        /// <param name="scalar">Scalar value</param>
-        /// <returns>Scaled vector</returns>
-        public static Vector2D operator *(Vector2D v, double scalar)
-        {
-            if (v == null)
-                throw new ArgumentNullException(nameof(v));
+        if (!resultX.IsSuccess || !resultY.IsSuccess)
+            throw new InvalidOperationException("Multiplication operation failed");
 
-            OperationParameters<double> parametersX = new OperationParameters<double>(v.X, scalar);
-            IOperationResult<double> resultX = _calculator.Multiply(parametersX);
-            
-            OperationParameters<double> parametersY = new OperationParameters<double>(v.Y, scalar);
-            IOperationResult<double> resultY = _calculator.Multiply(parametersY);
+        double newX = resultX.Value ?? 0;
+        double newY = resultY.Value ?? 0;
 
-            if (!resultX.IsSuccess || !resultY.IsSuccess)
-                throw new InvalidOperationException("Multiplication operation failed");
+        return new Vector2D(newX, newY);
+    }
 
-            double newX = resultX.Value ?? 0;
-            double newY = resultY.Value ?? 0;
+    /// <summary>
+    /// Scalar multiplication operator (reversed operands).
+    /// </summary>
+    /// <param name="scalar">Scalar value</param>
+    /// <param name="v">Vector to multiply</param>
+    /// <returns>Scaled vector</returns>
+    public static Vector2D operator *(double scalar, Vector2D v)
+    {
+        return v * scalar;
+    }
 
-            return new Vector2D(newX, newY);
-        }
+    /// <summary>
+    /// Determines whether the specified object is equal to the current vector.
+    /// </summary>
+    /// <param name="obj">The object to compare</param>
+    /// <returns>True if equal; otherwise, false</returns>
+    public override bool Equals(object? obj)
+    {
+        return obj is Vector2D vector && 
+               X == vector.X && 
+               Y == vector.Y;
+    }
 
-        /// <summary>
-        /// Scalar multiplication operator (reversed operands).
-        /// </summary>
-        /// <param name="scalar">Scalar value</param>
-        /// <param name="v">Vector to multiply</param>
-        /// <returns>Scaled vector</returns>
-        public static Vector2D operator *(double scalar, Vector2D v)
-        {
-            return v * scalar;
-        }
+    /// <summary>
+    /// Serves as the default hash function.
+    /// </summary>
+    /// <returns>A hash code for the current object</returns>
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(X, Y);
+    }
 
-        /// <summary>
-        /// Determines whether the specified object is equal to the current vector.
-        /// </summary>
-        /// <param name="obj">The object to compare</param>
-        /// <returns>True if equal; otherwise, false</returns>
-        public override bool Equals(object? obj)
-        {
-            return obj is Vector2D vector && 
-                   X == vector.X && 
-                   Y == vector.Y;
-        }
-
-        /// <summary>
-        /// Serves as the default hash function.
-        /// </summary>
-        /// <returns>A hash code for the current object</returns>
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(X, Y);
-        }
-
-        /// <summary>
-        /// Returns the string representation of the vector.
-        /// </summary>
-        /// <returns>String in format (X, Y)</returns>
-        public override string ToString()
-        {
-            return $"({X}, {Y})";
-        }
+    /// <summary>
+    /// Returns the string representation of the vector.
+    /// </summary>
+    /// <returns>String in format (X, Y)</returns>
+    public override string ToString()
+    {
+        return $"({X}, {Y})";
     }
 }
