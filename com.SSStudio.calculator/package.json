@@ -1,0 +1,19 @@
+{
+  "name": "com.ssstudio.calculator",
+  "displayName": "SSStudio Calculator",
+  "version": "1.0.0",
+  "unity": "2021.3",
+  "description": "A small calculator and vector math core library packaged for Unity (UPM). Contains Vectors, Models, Abstractions and Calculator core.",
+  "keywords": [
+    "calculator",
+    "vector",
+    "math",
+    "ssstudio"
+  ],
+  "author": {
+    "name": "SSStudio",
+    "email": "you@example.com",
+    "url": "https://example.com"
+  },
+  "dependencies": {}
+}

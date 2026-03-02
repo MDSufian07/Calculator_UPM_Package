@@ -1,0 +1,14 @@
+// ...existing file...
+{
+  "name": "com.ssstudio.calculator",
+  "references": [],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": []
+}
+// ...existing file...
