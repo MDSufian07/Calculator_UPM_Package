@@ -1,0 +1,96 @@
+# Unity UPM package .gitignore
+# Purpose: ignore OS, editor, build and package manager artifacts while keeping
+# package source (Runtime/*.cs), .asmdef, package.json, README.md and other
+# package metadata committed.
+
+# -----------------
+# OS
+# -----------------
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# -----------------
+# Visual Studio / .NET
+# -----------------
+.vs/
+*.user
+*.userosscache
+*.suo
+*.userprefs
+*.csproj.user
+*.pidb
+*.opendb
+*.VC.db
+*.pdb
+
+# Rider
+.idea/
+*.sln.iml
+
+# VS Code
+.vscode/
+
+# -----------------
+# Unity specific
+# -----------------
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+MemoryCaptures/
+sysinfo.txt
+*.unitypackage
+
+# Editor crashes
+CrashReport?.*
+
+# -----------------
+# Package manager / node / npm
+# -----------------
+node_modules/
+npm-debug.log*
+yarn-error.log*
+.pnpm-store/
+
+# -----------------
+# Test / coverage
+# -----------------
+TestResults/
+coverage/
+*.coverage
+
+# -----------------
+# Misc temp files
+# -----------------
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+*.lock
+
+# -----------------
+# Distribution artifacts (optional)
+# -----------------
+*.tgz
+*.zip
+
+# -----------------
+# Notes
+# -----------------
+# Keep package source and metadata tracked. Do NOT ignore files such as:
+#  - package.json
+#  - README.md
+#  - CHANGELOG.md
+#  - Runtime/*.cs
+#  - *.asmdef
+# If your team prefers to ignore IDE settings for everyone, keep the .idea/ and .vscode/ entries above; otherwise remove them.
