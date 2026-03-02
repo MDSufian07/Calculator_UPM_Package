@@ -1,38 +1,39 @@
-namespace Ssstudio.Calculator.Models;
-
-public interface IOperationResult<T> where T : struct, IComparable, IFormattable, IConvertible
+namespace Ssstudio.Calculator.Models
 {
-    bool IsSuccess { get; }
-    T? Value { get; }
-    string? ErrorMessage { get; }
-    string ToDisplayString();
-}
-
-public class OperationResult<T> : IOperationResult<T> where T : struct, IComparable, IFormattable, IConvertible
-{
-    public bool IsSuccess { get; internal set; }
-    public T? Value { get; internal set; }
-    public string? ErrorMessage { get; internal set; }
-
-    internal OperationResult() { }
-
-    public static IOperationResult<T> Success(T value)
+    public interface IOperationResult<T> where T : struct, IComparable, IFormattable, IConvertible
     {
-        return new OperationResult<T> { IsSuccess = true, Value = value, ErrorMessage = null };
+        bool IsSuccess { get; }
+        T? Value { get; }
+        string? ErrorMessage { get; }
+        string ToDisplayString();
     }
 
-    public static IOperationResult<T> Failure(string errorMessage)
+    public class OperationResult<T> : IOperationResult<T> where T : struct, IComparable, IFormattable, IConvertible
     {
-        return new OperationResult<T> { IsSuccess = false, Value = null, ErrorMessage = errorMessage };
+        public bool IsSuccess { get; internal set; }
+        public T? Value { get; internal set; }
+        public string? ErrorMessage { get; internal set; }
+
+        internal OperationResult() { }
+
+        public static IOperationResult<T> Success(T value)
+        {
+            return new OperationResult<T> { IsSuccess = true, Value = value, ErrorMessage = null };
+        }
+
+        public static IOperationResult<T> Failure(string errorMessage)
+        {
+            return new OperationResult<T> { IsSuccess = false, Value = null, ErrorMessage = errorMessage };
+        }
+
+        public string ToDisplayString() => IsSuccess ? $"Result: {Value}" : $"Error: {ErrorMessage}";
+        public override string ToString() => ToDisplayString();
     }
 
-    public string ToDisplayString() => IsSuccess ? $"Result: {Value}" : $"Error: {ErrorMessage}";
-    public override string ToString() => ToDisplayString();
-}
+    public interface IOperationResult : IOperationResult<double> { }
 
-public interface IOperationResult : IOperationResult<double> { }
-
-public class OperationResult : OperationResult<double>, IOperationResult
-{
-    internal OperationResult() { }
+    public class OperationResult : OperationResult<double>, IOperationResult
+    {
+        internal OperationResult() { }
+    }
 }
