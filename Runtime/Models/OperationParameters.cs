@@ -1,29 +1,32 @@
-namespace Ssstudio.Calculator.Models;
+using System;
 
-/// <summary>
-/// Generic operation parameters supporting any numeric type.
-/// </summary>
-public class OperationParameters<T> where T : struct, IComparable, IFormattable, IConvertible
+namespace Ssstudio.Calculator.Models
 {
-    public T FirstValue { get; }
-    public T SecondValue { get; }
-
-    public OperationParameters(T firstValue, T secondValue)
+    /// <summary>
+    /// Generic operation parameters supporting any numeric type.
+    /// </summary>
+    public class OperationParameters<T> where T : struct, IComparable, IFormattable, IConvertible
     {
-        FirstValue = firstValue;
-        SecondValue = secondValue;
+        public T FirstValue { get; }
+        public T SecondValue { get; }
+
+        public OperationParameters(T firstValue, T secondValue)
+        {
+            FirstValue = firstValue;
+            SecondValue = secondValue;
+        }
+
+        public override string ToString() => $"({FirstValue}, {SecondValue})";
     }
 
-    public override string ToString() => $"({FirstValue}, {SecondValue})";
-}
-
-/// <summary>
-/// Non-generic version for backward compatibility.
-/// </summary>
-public class OperationParameters : OperationParameters<double>
-{
-    public OperationParameters(double firstValue, double secondValue) 
-        : base(firstValue, secondValue)
+    /// <summary>
+    /// Non-generic version for backward compatibility.
+    /// </summary>
+    public class OperationParameters : OperationParameters<double>
     {
+        public OperationParameters(double firstValue, double secondValue)
+            : base(firstValue, secondValue)
+        {
+        }
     }
 }

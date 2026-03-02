@@ -1,4 +1,3 @@
-// ...existing file...
 {
   "name": "com.ssstudio.calculator",
   "references": [],
@@ -11,4 +10,3 @@
   "defineConstraints": [],
   "versionDefines": []
 }
-// ...existing file...
