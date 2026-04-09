@@ -9,6 +9,8 @@ namespace Ssstudio.Calculator
         IOperationResult<T> Subtract(OperationParameters<T> parameters);
         IOperationResult<T> Multiply(OperationParameters<T> parameters);
         IOperationResult<T> Divide(OperationParameters<T> parameters);
+        IOperationResult<T> Square(OperationParameters<T> parameters);
+        IOperationResult<T> Root(OperationParameters<T> parameters);
     }
 
     public interface ICalculator : ICalculator<double> { }
